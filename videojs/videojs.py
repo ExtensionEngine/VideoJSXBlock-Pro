@@ -67,7 +67,7 @@ class videojsXBlock(XBlock):
         Gets the content of a resource
         """
         resource_content = pkg_resources.resource_string(__name__, resource_path)
-        return unicode(resource_content)
+        return unicode(resource_content.decode('utf-8'))
 
     def render_template(self, template_path, context={}):
         """
@@ -106,6 +106,7 @@ class videojsXBlock(XBlock):
 
         frag = Fragment(html)
         frag.add_css(self.load_resource("public/css/video-js.css"))
+        
         frag.add_javascript(self.load_resource("public/js/video-js.min.js"))
 
         frag.add_css(self.load_resource("public/css/videojs.css"))

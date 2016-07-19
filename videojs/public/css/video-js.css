@@ -79,7 +79,7 @@ The default control bar that is a container for most of the controls.
   position: absolute;
   /* Place control bar at the bottom of the player box/video.
      If you want more margin below the control bar, add more height. */
-  bottom: 0;
+  bottom: 51px;
   /* Use left/right to stretch to 100% width of player div */
   left: 0;
   right: 0;
@@ -432,6 +432,7 @@ fonts to show/hide properly.
   width: 3.8em;
   cursor: pointer;
   float: right;
+  display: none;
 }
 .vjs-default-skin .vjs-fullscreen-control:before {
   content: "\e000";
