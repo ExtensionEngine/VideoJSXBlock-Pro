@@ -22,4 +22,6 @@
 
 .xblock-render .vjs-fullscreen {
     position: relative;
+    min-height: 400px !important;
+    height: 400px !important;
 }
