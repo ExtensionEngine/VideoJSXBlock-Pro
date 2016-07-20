@@ -25,3 +25,7 @@
     min-height: 400px !important;
     height: 400px !important;
 }
+
+.xblock-render .vjs-default-skin .vjs-control-bar {
+    bottom: 0;
+}
