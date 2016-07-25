@@ -21,9 +21,7 @@ function videojsXBlockInitView(runtime, element) {
     var video = element.find('video');
     for (var i = 0; i < video.size(); i++) {
         videojs(video.get(i), {playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2]}, function () {
-            console.log('ID', this, this.id());
             players[this.id()] = handlerUrl;
-            console.log('plyers', players);
             this.on('timeupdate', function () {
                 previousTime = currentTime;
                 currentTime = this.currentTime();
@@ -46,7 +44,6 @@ function videojsXBlockInitView(runtime, element) {
             });
             this.on('loadstart', function () {
                 var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
-                console.log(msg);
                 send_msg(players[this.id()], msg, 'load_video')
             })
         });
@@ -54,18 +51,15 @@ function videojsXBlockInitView(runtime, element) {
 }
 
 function get_xblock_id(url) {
-    console.log('get_xblock_id_start');
     return url.slice(url.lastIndexOf('@') + 1, url.indexOf('/handler'));
 }
 
 function send_msg(url, msg, type) {
-    console.log('send_msg_start');
     $.ajax({
         type: "POST",
         url: url,
         data: JSON.stringify({msg: msg, type: type}),
         success: function (result) {
-            console.log(result);
             if (result['result'] == 'success') {
                 return 1;
             } else {
@@ -73,13 +67,11 @@ function send_msg(url, msg, type) {
             }
         }
     });
-    console.log('send_msg_end');
 }
 
 // YOUTUBE FUNCTIONS
 
 function youtubeInit(runtime, element) {
-  console.log('src', element);
   if (element.innerHTML) element = $(element);
 
   youtubePlayerHandler = runtime.handlerUrl(element, 'tracking_log');
@@ -165,10 +157,6 @@ function vimeoInit(runtime, element) {
                     onPlay(data.data);
                     break;
 
-                case 'playProgress':
-                    onPlayProgress(data.data);
-                    break;
-
                 case 'pause':
                     onPause(data.data);
                     break;
@@ -186,37 +174,23 @@ function vimeoInit(runtime, element) {
         function onReady() {
         }
         function onPlay(data) {
-            console.log('DATA', data);
             var msg = "{'id':'" + get_xblock_id(vimeoPlayerHandler) + "','currentTime':" + data.seconds + ",'code':'vimeo'}";
             send_msg(vimeoPlayerHandler, msg, 'play_video')
         }
 
         function onPause(data) {
-            console.log('pause DATA', data);
             var msg = "{'id':'" + get_xblock_id(vimeoPlayerHandler) + "','currentTime':" + data.seconds + ",'code':'vimeo'}";
             send_msg(vimeoPlayerHandler, msg, 'pause_video')
         }
 
         function onSeek(data) {
-            console.log('seek DATA', data);
             var msg = "{'id':'" + get_xblock_id(vimeoPlayerHandler) + "','old_time':0,'new_time':" + data.seconds + ",'type':'onSlideSeek','code':'vimeo'}";
             send_msg(vimeoPlayerHandler, msg, 'pause_video')
         }
 
         function onFinish(data) {
-            console.log('finish  DATA', data);
             var msg = "{'id':'" + get_xblock_id(vimeoPlayerHandler) + "','currentTime':" + data.seconds + ",'code':'vimeo'}";
             send_msg(vimeoPlayerHandler, msg, 'finish_video')
-        }
-
-        function onPlayProgress(data) {
-            var quartile;
-            if (data.percent % 25 === 0) {
-                quartile = data.percent / 25;
-                analytics.track('Video Progress', {
-                    quartile: quartile
-                })
-            }
         }
     });
 }

@@ -143,13 +143,6 @@ class videojsXBlock(XBlock):
 
         frag = Fragment(html)
         frag.add_javascript(self.load_resource("public/js/videojs_edit.js"))
-        # frag.add_javascript(self.load_resource("public/js/video-js.min.js"))
-        # frag.add_css(self.load_resource("public/css/video-js.css"))
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.eot'))
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.svg'), 'image/svg+xml')
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.ttf'))
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.woff'), 'application/x-font-woff')
-
         frag.add_resource_url(self.runtime.local_resource_url(self, 'public/img/loading.gif'), 'image/gif')
         frag.initialize_js('videojsXBlockInitStudio')
         return frag
