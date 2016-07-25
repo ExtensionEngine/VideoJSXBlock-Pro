@@ -85,6 +85,9 @@ class videojsXBlock(XBlock):
         The primary view of the XBlock, shown to students
         when viewing courses.
         """
+        is_youtube = 'youtu' in self.url
+        is_vimeo = 'vimeo' in self.url
+
         fullUrl = self.url
         if self.start_time != "" and self.end_time != "":
             fullUrl += "#t=" + self.start_time + "," + self.end_time
@@ -100,7 +103,9 @@ class videojsXBlock(XBlock):
             'source_text': self.source_text,
             'source_url': self.source_url,
             'subtitle_url': self.sub_title_url,
-            'id': time.time()
+            'id': time.time(),
+            'is_youtube': is_youtube,
+            'is_vimeo': is_vimeo
         }
         html = self.render_template('public/html/videojs_view.html', context)
 
@@ -109,11 +114,14 @@ class videojsXBlock(XBlock):
         frag.add_javascript(self.load_resource("public/js/video-js.min.js"))
 
         frag.add_css(self.load_resource("public/css/videojs.css"))
-        # frag.add_css_url(self.runtime.local_resource_url(self, 'public/css/video-js.css'))
-        # frag.add_javascript_url(self.runtime.local_resource_url(self, 'public/js/video-js.min.js'))
 
         frag.add_javascript(self.load_resource("public/js/videojs_view.js"))
         frag.initialize_js('videojsXBlockInitView')
+        if is_youtube:
+            frag.initialize_js('youtubeInit')
+        if is_vimeo:
+            frag.initialize_js('vimeoInit')
+
         return frag
 
     def studio_view(self, context=None):
