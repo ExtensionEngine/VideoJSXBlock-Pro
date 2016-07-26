@@ -83,11 +83,13 @@ function youtubeInit(runtime, element) {
 }
 
 function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player', {
-    height: '390',
-    width: '640',
+  var videoId = $('#player').attr('data-video');
 
-    videoId: 'M7lc1UVf-VE',
+  player = new YT.Player('player', {
+    height: window.innerHeight*0.8,
+    width: window.innerWidth*0.8,
+
+    videoId: videoId,
     events: {
       'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
