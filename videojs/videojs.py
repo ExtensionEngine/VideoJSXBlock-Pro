@@ -1,12 +1,14 @@
 """ videojsXBlock main Python class"""
 
 import pkg_resources
+import time
+import re
+
 from django.template import Context, Template
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
-import time
 
 
 class videojsXBlock(XBlock):
@@ -87,6 +89,17 @@ class videojsXBlock(XBlock):
         """
         is_youtube = 'youtu' in self.url
         is_vimeo = 'vimeo' in self.url
+        video_id = None
+
+        if is_youtube:
+            regex = '^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*'
+            pattern = re.compile(regex)
+            video_id = pattern.findall(self.url)[-1][-1]
+
+        if is_vimeo:
+            regex = '^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)'
+            pattern = re.compile(regex)
+            video_id = pattern.findall(self.url)[-1][-1]
 
         fullUrl = self.url
         if self.start_time != "" and self.end_time != "":
@@ -105,7 +118,8 @@ class videojsXBlock(XBlock):
             'subtitle_url': self.sub_title_url,
             'id': time.time(),
             'is_youtube': is_youtube,
-            'is_vimeo': is_vimeo
+            'is_vimeo': is_vimeo,
+            'video_id': video_id
         }
         html = self.render_template('public/html/videojs_view.html', context)
 

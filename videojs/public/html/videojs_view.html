@@ -1,13 +1,17 @@
 <div class="videojs_block">
+    <h2>{{video_id}}</h2>
     {% if is_youtube %}
-      <div id="player"></div>
+      <div id="player" data-video="{{video_id}}"></div>
     {% elif is_vimeo %}
       <iframe
         id="player_1"
-        src="http://player.vimeo.com/video/7100569?api=1&player_id=player_1"
+        src="http://player.vimeo.com/video/{{video_id}}?api=1&player_id=player_1&autoplay=1&byline=0&badge=0&portrait=0&title=0"
         width="540"
         height="304"
         frameborder="0"
+        webkitallowfullscreen
+        mozallowfullscreen
+        allowfullscreen
       >
       </iframe>
     {% else %}
