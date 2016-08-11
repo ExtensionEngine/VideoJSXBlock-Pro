@@ -52,7 +52,7 @@ The control icons are from a custom font. Each icon corresponds to a character
   top: 0;
 }
 .vjs-default-skin .vjs-slider-handle:before {
-  content: "\e009";
+  /*content: "\e009";*/
   font-family: VideoJS;
   font-size: 1em;
   line-height: 1;
@@ -84,7 +84,7 @@ The default control bar that is a container for most of the controls.
   left: 0;
   right: 0;
   /* Height includes any margin you want above or below control items */
-  height: 3.0em;
+  height: 0;
   /* background-color-with-alpha */
   background-color: #07141e;
   background-color: rgba(7, 20, 30, 0.7);
@@ -309,7 +309,7 @@ fonts to show/hide properly.
   left: 0;
   right: 0;
   width: auto;
-  font-size: 0.3em;
+  font-size: .9em;
   height: 1em;
   /* Set above the rest of the controls. */
   top: -1em;
@@ -324,7 +324,7 @@ fonts to show/hide properly.
     This simply changes the overall font for the progress bar, and this
     updates both the em-based widths and heights, as wells as the icon font */
 .vjs-default-skin:hover .vjs-progress-control {
-  font-size: .9em;
+  /*font-size: .9em;*/
   /* Even though we're not changing the top/height, we need to include them in
       the transition so they're handled correctly. */
 
@@ -364,7 +364,8 @@ fonts to show/hide properly.
       The -50% left position makes that happen.
   */
 
-  background: #66a8cc url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50% 0 repeat;
+  /*background: #66a8cc url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAP0lEQVQIHWWMAQoAIAgDR/QJ/Ub//04+w7ZICBwcOg5FZi5iBB82AGzixEglJrd4TVK5XUJpskSTEvpdFzX9AB2pGziSQcvAAAAAAElFTkSuQmCC) -50% 0 repeat;*/
+  background: orange;
 }
 .vjs-default-skin .vjs-load-progress {
   background: #646464 /* IE8- Fallback */;

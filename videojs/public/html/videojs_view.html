@@ -22,10 +22,19 @@
         width="600"
         height="400"
         id="video-js{{ id }}"
+        data-setup='{"controlBar": {
+            "muteToggle": false,
+            "playToggle": false,
+            "volumeControl": false,
+            "fullscreenToggle": false,
+            "currentTimeDisplay": false,
+            "timeDivider": false,
+            "durationDisplay": false,
+            "remainingTimeDisplay": false,
+            "playbackRateMenuButton": false
+            }}'
         >
           <source src="{{ url }}" type="video/mp4">
-          <track kind="captions" src="{{ subtitle_url }}" srclang="en"
-                 label="English" default>
           <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that
               <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
       </video>
