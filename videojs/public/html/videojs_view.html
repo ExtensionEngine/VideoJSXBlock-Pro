@@ -18,7 +18,6 @@
         class="video-js vjs-default-skin vjs-fullscreen"
         controls
         preload="auto"
-        autoplay
         width="600"
         height="400"
         id="video-js{{ id }}"
@@ -39,9 +38,11 @@
               <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
       </video>
       <script>
-        $( document ).ready(function() {
-          $('video')[0].play();
-        });
+        document.getElementsByTagName('video')[0].onloadstart = function() {
+          if( $('.xblock-render').length == 0 ) {
+            $('video')[0].play();
+          }
+        }
       </script>
     {% endif %}
 </div>
