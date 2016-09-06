@@ -10,6 +10,8 @@ function videojsXBlockInitStudio(runtime, element) {
     $(element).find('.action-save').bind('click', function () {
         var data = {
             'display_name': $('#videojs_edit_display_name').val(),
+            'display_description': $('#videojs_edit_display_description').val(),
+            'thumbnail_url': $('#videojs_edit_thumbnail_url').val(),
             'url': $('#videojs_edit_url').val(),
             'allow_download': $('#videojs_edit_allow_download').val(),
             'source_text': $('#videojs_edit_source_text').val(),
@@ -18,8 +20,6 @@ function videojsXBlockInitStudio(runtime, element) {
             'end_time': $('#videojs_edit_end_time').val(),
             'sub_title': $('#videojs_sub_title').val()
         };
-
-        console.log(data);
 
         runtime.notify('save', {state: 'start'});
 

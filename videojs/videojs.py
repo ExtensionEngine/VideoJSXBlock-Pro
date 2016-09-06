@@ -111,6 +111,8 @@ class videojsXBlock(XBlock):
 
         context = {
             'display_name': self.display_name,
+            'display_description': self.display_description,
+            'thumbnail_url': self.thumbnail_url,
             'url': fullUrl,
             'allow_download': self.allow_download,
             'source_text': self.source_text,
@@ -145,6 +147,8 @@ class videojsXBlock(XBlock):
         """
         context = {
             'display_name': self.display_name,
+            'display_description': self.display_description,
+            'thumbnail_url': self.thumbnail_url,
             'url': self.url,
             'allow_download': self.allow_download,
             'source_text': self.source_text,
@@ -167,6 +171,8 @@ class videojsXBlock(XBlock):
         The saving handler.
         """
         self.display_name = data['display_name']
+        self.display_description = data['display_description']
+        self.thumbnail_url = data['thumbnail_url']
         self.url = data['url']
         self.allow_download = True if data['allow_download'] == "True" else False  # Str to Bool translation
         self.source_text = data['source_text']
