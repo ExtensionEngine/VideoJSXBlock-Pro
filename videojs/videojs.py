@@ -21,7 +21,7 @@ class videojsXBlock(XBlock):
     Fields
     '''
     display_name = String(display_name="Display Name",
-                          default="Video JS",
+                          default="Video",
                           scope=Scope.settings,
                           help="This name appears in the horizontal navigation at the top of the page.")
 
