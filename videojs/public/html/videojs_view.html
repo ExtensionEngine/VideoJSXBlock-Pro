@@ -25,9 +25,28 @@
     {% endif %}
 </div>
 
+
 <script>
   $( document ).ready(function() {
+    parent.postMessage(JSON.stringify({action:'getMuted'}),'*');
+
     $('video')[0].play();
+
+
+    function handleIframeMessage(event) {
+      var message = JSON.parse(event.data);
+      switch (message.action) {
+        case 'mute':
+          $('video')[0].muted = true;
+          break;
+
+        case 'unmute':
+          $('video')[0].muted = false;
+          break;
+      }
+    }
+    window.addEventListener('message', handleIframeMessage, false);
+
   });
 </script>
 
