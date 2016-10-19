@@ -39,7 +39,6 @@
       </video>
       <script>
         document.getElementsByTagName('video')[0].ready = function() {
-          console.log("canplay");
           if( $('.xblock-render').length == 0 ) {
             $('video')[0].play();
           }
