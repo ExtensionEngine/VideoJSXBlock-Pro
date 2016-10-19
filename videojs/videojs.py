@@ -1,12 +1,14 @@
 """ videojsXBlock main Python class"""
 
 import pkg_resources
+import time
+import re
+
 from django.template import Context, Template
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
-import time
 
 
 class videojsXBlock(XBlock):
@@ -19,7 +21,7 @@ class videojsXBlock(XBlock):
     Fields
     '''
     display_name = String(display_name="Display Name",
-                          default="Video JS",
+                          default="Video",
                           scope=Scope.settings,
                           help="This name appears in the horizontal navigation at the top of the page.")
 
@@ -85,6 +87,20 @@ class videojsXBlock(XBlock):
         The primary view of the XBlock, shown to students
         when viewing courses.
         """
+        is_youtube = 'youtu' in self.url
+        is_vimeo = 'vimeo' in self.url
+        video_id = None
+
+        if is_youtube:
+            regex = '^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*'
+            pattern = re.compile(regex)
+            video_id = pattern.findall(self.url)[-1][-1]
+
+        if is_vimeo:
+            regex = '^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)'
+            pattern = re.compile(regex)
+            video_id = pattern.findall(self.url)[-1][-1]
+
         fullUrl = self.url
         if self.start_time != "" and self.end_time != "":
             fullUrl += "#t=" + self.start_time + "," + self.end_time
@@ -95,26 +111,33 @@ class videojsXBlock(XBlock):
 
         context = {
             'display_name': self.display_name,
+            'display_description': self.display_description,
+            'thumbnail_url': self.thumbnail_url,
             'url': fullUrl,
             'allow_download': self.allow_download,
             'source_text': self.source_text,
             'source_url': self.source_url,
             'subtitle_url': self.sub_title_url,
-            'id': time.time()
+            'id': time.time(),
+            'is_youtube': is_youtube,
+            'is_vimeo': is_vimeo,
+            'video_id': video_id
         }
         html = self.render_template('public/html/videojs_view.html', context)
 
         frag = Fragment(html)
         frag.add_css(self.load_resource("public/css/video-js.css"))
-        
         frag.add_javascript(self.load_resource("public/js/video-js.min.js"))
 
         frag.add_css(self.load_resource("public/css/videojs.css"))
-        # frag.add_css_url(self.runtime.local_resource_url(self, 'public/css/video-js.css'))
-        # frag.add_javascript_url(self.runtime.local_resource_url(self, 'public/js/video-js.min.js'))
 
         frag.add_javascript(self.load_resource("public/js/videojs_view.js"))
         frag.initialize_js('videojsXBlockInitView')
+        if is_youtube:
+            frag.initialize_js('youtubeInit')
+        if is_vimeo:
+            frag.initialize_js('vimeoInit')
+
         return frag
 
     def studio_view(self, context=None):
@@ -124,6 +147,8 @@ class videojsXBlock(XBlock):
         """
         context = {
             'display_name': self.display_name,
+            'display_description': self.display_description,
+            'thumbnail_url': self.thumbnail_url,
             'url': self.url,
             'allow_download': self.allow_download,
             'source_text': self.source_text,
@@ -136,13 +161,6 @@ class videojsXBlock(XBlock):
 
         frag = Fragment(html)
         frag.add_javascript(self.load_resource("public/js/videojs_edit.js"))
-        # frag.add_javascript(self.load_resource("public/js/video-js.min.js"))
-        # frag.add_css(self.load_resource("public/css/video-js.css"))
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.eot'))
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.svg'), 'image/svg+xml')
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.ttf'))
-        #frag.add_resource_url(self.runtime.local_resource_url(self, 'public/font/vjs.woff'), 'application/x-font-woff')
-
         frag.add_resource_url(self.runtime.local_resource_url(self, 'public/img/loading.gif'), 'image/gif')
         frag.initialize_js('videojsXBlockInitStudio')
         return frag
@@ -153,6 +171,8 @@ class videojsXBlock(XBlock):
         The saving handler.
         """
         self.display_name = data['display_name']
+        self.display_description = data['display_description']
+        self.thumbnail_url = data['thumbnail_url']
         self.url = data['url']
         self.allow_download = True if data['allow_download'] == "True" else False  # Str to Bool translation
         self.source_text = data['source_text']

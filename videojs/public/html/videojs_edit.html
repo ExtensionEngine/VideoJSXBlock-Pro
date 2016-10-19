@@ -12,6 +12,24 @@
 
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="videojs_edit_display_description">Description</label>
+                <input class="input setting-input" id="videojs_edit_display_description" value="{{ display_description }}"
+                       type="text">
+            </div>
+            <span class="tip setting-help">Video description.</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set">
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="videojs_edit_thumbnail_url">Thumbnail URL</label>
+                <input class="input setting-input" id="videojs_edit_thumbnail_url" value="{{ thumbnail_url }}"
+                       type="text">
+            </div>
+            <span class="tip setting-help">URL for the thumbnail image.</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set">
+            <div class="wrapper-comp-setting">
                 <label class="label setting-label" for="videojs_edit_url">Video URL</label>
                 <input class="input setting-input" id="videojs_edit_url" value="{{ url }}" type="text">
             </div>
