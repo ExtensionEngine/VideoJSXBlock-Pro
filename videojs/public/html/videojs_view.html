@@ -38,11 +38,31 @@
               <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
       </video>
       <script>
-        document.getElementsByTagName('video')[0].onloadstart = function() {
+        document.getElementsByTagName('video')[0].ready = function() {
           if( $('.xblock-render').length == 0 ) {
             $('video')[0].play();
           }
         }
+      </script>
+      <script>
+        $( document ).ready(function() {
+          parent.postMessage(JSON.stringify({action:'getMuted'}),'*');
+
+          function handleIframeMessage(event) {
+            var message = JSON.parse(event.data);
+            switch (message.action) {
+              case 'mute':
+                $('video')[0].muted = true;
+                break;
+
+              case 'unmute':
+                $('video')[0].muted = false;
+                break;
+            }
+          }
+          window.addEventListener('message', handleIframeMessage, false);
+
+        });
       </script>
     {% endif %}
 </div>
