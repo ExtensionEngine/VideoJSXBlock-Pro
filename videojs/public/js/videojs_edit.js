@@ -6,19 +6,20 @@ function videojsXBlockInitStudio(runtime, element) {
     });
 
     var handlerUrl = runtime.handlerUrl(element, 'save_videojs');
+    var uploadUrl = runtime.handlerUrl(element, 'upload_video');
 
     $(element).find('.action-save').bind('click', function () {
         var data = {
-            'display_name': $('#videojs_edit_display_name').val(),
-            'display_description': $('#videojs_edit_display_description').val(),
-            'thumbnail_url': $('#videojs_edit_thumbnail_url').val(),
-            'url': $('#videojs_edit_url').val(),
-            'allow_download': $('#videojs_edit_allow_download').val(),
-            'source_text': $('#videojs_edit_source_text').val(),
-            'source_url': $('#videojs_edit_source_url').val(),
-            'start_time': $('#videojs_edit_start_time').val(),
-            'end_time': $('#videojs_edit_end_time').val(),
-            'sub_title': $('#videojs_sub_title').val()
+            'display_name': $(element).find('#videojs_edit_display_name').val(),
+            'display_description': $(element).find('#videojs_edit_display_description').val(),
+            'thumbnail_url': $(element).find('#videojs_edit_thumbnail_url').val(),
+            'url': $(element).find('#videojs_edit_url').val(),
+            'allow_download': $(element).find('#videojs_edit_allow_download').val(),
+            'source_text': $(element).find('#videojs_edit_source_text').val(),
+            'source_url': $(element).find('#videojs_edit_source_url').val(),
+            'start_time': $(element).find('#videojs_edit_start_time').val(),
+            'end_time': $(element).find('#videojs_edit_end_time').val(),
+            'sub_title': $(element).find('#videojs_sub_title').val()
         };
 
         runtime.notify('save', {state: 'start'});
@@ -37,16 +38,51 @@ function videojsXBlockInitStudio(runtime, element) {
     $(element).find("input[name=file]").bind('change', function () {
         var file = this.files[0];
         name = file.name;
-        //if (name.slice(name.lastIndexOf('.')) != 'vtt') {
-        //    $('#error-file').show();
-        //} else {
-            uploadCaption(handlerUrl);
-        //}
+        uploadCaption(handlerUrl);
+    });
+
+    // video file upload
+    $(element).find('#fileupload').bind('change', function () {
+        var data = new FormData();
+        data.append('fileupload', $(element).find('input[name=fileupload]')[0].files[0]);
+
+        $.ajax({
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = (evt.loaded / evt.total)*100;
+                        $(element).find('#fileuploadProgress').attr('value', percentComplete);
+                        $(element).find('#fileuploadStatus').html('Uploading file...').css('color', '#555');
+                    }
+               }, false);
+
+               return xhr;
+            },
+            type: 'POST',
+            url: uploadUrl,
+            data: data,
+            cache: false,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function(data){
+                $(element).find('#videojs_edit_url').val(data.url);
+                $(element).find('#fileuploadStatus').html('File upload success!').css('color', 'green');
+            },
+            error: function() {
+                alert('File upload failed!');
+                $(element).find('#fileuploadStatus').html('File upload failed!').css('color', 'red');
+            }
+        });
+
+        $(element).find('#fileuploadProgress').show();
+        $(element).find('#fileuploadStatus').html('File upload started.').css('color', '#555');
     });
 }
 
 function uploadCaption(url) {
-    $('#loading-upload').show();
+    $(element).find('#loading-upload').show();
     var action = getFileUploadUrl(url);
     var formData = new FormData($('#file-chooser')[0]);
     $.ajax({
@@ -54,24 +90,18 @@ function uploadCaption(url) {
         type: 'POST',
         xhr: function () {  // custom xhr
             myXhr = $.ajaxSettings.xhr();
-            //if (myXhr.upload) { // check if upload property exists
-            //    myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // for handling the progress of the upload
-            //}
             return myXhr;
         },
-        //beforeSend: beforeSendHandler,
         success: function (msg) {
-            $('#loading-upload').hide();
+            $(element).find('#loading-upload').hide();
             if (msg['asset']['url']) {
-                $('#videojs_sub_title').val(msg['asset']['url']);
-                $('#upload-success').show();
+                $(element).find('#videojs_sub_title').val(msg['asset']['url']);
+                $(element).find('#upload-success').show();
             } else {
-                $('#upload-fail').show();
+                $(element).find('#upload-fail').show();
             }
         },
-        // Form数据
         data: formData,
-        //Options to tell JQuery not to process data or worry about content-type
         cache: false,
         contentType: false,
         processData: false

@@ -4,11 +4,20 @@ import pkg_resources
 import time
 import re
 
+from functools import partial
+
+from django.conf import settings
+
 from django.template import Context, Template
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
+
+
+from webob.response import Response
+from xmodule.contentstore.content import StaticContent
+from xmodule.contentstore.django import contentstore
 
 
 class videojsXBlock(XBlock):
@@ -193,3 +202,52 @@ class videojsXBlock(XBlock):
         return {
             'result': 'success'
         }
+
+    @XBlock.handler
+    def upload_video(self, request, suffix=''):
+        data = request.POST
+
+        if not isinstance(data['fileupload'], basestring):
+            upload = data['fileupload']
+
+            filename = self._file_storage_name(upload.file.name)
+            content_location = StaticContent.compute_location(self.location.course_key, filename)
+
+            chunked = upload.file.multiple_chunks()
+            sc_partial = partial(StaticContent, content_location, filename, upload.file.content_type)
+            if chunked:
+                content = sc_partial(upload.file.chunks())
+                tempfile_path = upload.file.temporary_file_path()
+            else:
+                content = sc_partial(upload.file.read())
+                tempfile_path = None
+
+            contentstore().save(content)
+
+            # readback the saved content - we need the database timestamp
+            readback = contentstore().find(content.location)
+            locked = getattr(content, 'locked', False)
+
+            url = StaticContent.serialize_asset_key_with_slash(content.location)
+
+            return Response(json_body={'result': 'success', 'url': url})
+
+        else:
+            return Response(json_body={'result': 'error'})
+
+
+
+    def _file_storage_name(self, filename):
+        # pylint: disable=no-member
+        """
+        Get file path of storage.
+        """
+        path = (
+            '{loc.block_type}/{loc.block_id}'
+            '/{filename}'.format(
+                loc=self.location,
+                filename=filename
+            )
+        )
+
+        return path

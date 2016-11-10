@@ -30,10 +30,12 @@
 
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_url">Video URL</label>
-                <input class="input setting-input" id="videojs_edit_url" value="{{ url }}" type="text">
+                <label class="label setting-label" for="videojs_edit_url">Video file</label>
+                <input id="videojs_edit_url" value="{{ url }}" type="hidden">
+                <input id="fileupload" type="file" name="fileupload" data-url="">
+                <progress id="fileuploadProgress" max=100 style="display: none;"></progress>
+                <span id="fileuploadStatus" style="float: right;"></span>
             </div>
-            <span class="tip setting-help">The URL for your video.</span>
         </li>
 
         <li class="field comp-setting-entry is-set">
