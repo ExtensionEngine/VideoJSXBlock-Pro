@@ -4,11 +4,20 @@ import pkg_resources
 import time
 import re
 
+from functools import partial
+
+from django.conf import settings
+
 from django.template import Context, Template
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
+
+
+from webob.response import Response
+from xmodule.contentstore.content import StaticContent
+from xmodule.contentstore.django import contentstore
 
 
 class videojsXBlock(XBlock):
@@ -165,14 +174,16 @@ class videojsXBlock(XBlock):
         frag.initialize_js('videojsXBlockInitStudio')
         return frag
 
-    @XBlock.json_handler
-    def save_videojs(self, data, suffix=''):
+    @XBlock.handler
+    def save_videojs(self, request, suffix=''):
         """
         The saving handler.
         """
+        data = request.POST
+
         self.display_name = data['display_name']
         self.display_description = data['display_description']
-        self.thumbnail_url = data['thumbnail_url']
+        self.thumbnail_url = self._save_file(data['thumbnail']) # save file and return URL
         self.url = data['url']
         self.allow_download = True if data['allow_download'] == "True" else False  # Str to Bool translation
         self.source_text = data['source_text']
@@ -181,9 +192,8 @@ class videojsXBlock(XBlock):
         self.end_time = ''.join(data['end_time'].split())  # Remove whitespace
         self.sub_title_url = data['sub_title']
 
-        return {
-            'result': 'success',
-        }
+        return Response(json_body={'result': 'success'})
+
 
     @XBlock.json_handler
     def tracking_log(self, data, suffix=''):
@@ -193,3 +203,59 @@ class videojsXBlock(XBlock):
         return {
             'result': 'success'
         }
+
+    @XBlock.handler
+    def upload_video(self, request, suffix=''):
+        data = request.POST
+        url = self._save_file(data['fileupload'])
+
+        if url is not None:
+            return Response(json_body={'result': 'success', 'url': url})
+
+        else:
+            return Response(json_body={'result': 'error'})
+
+
+
+    def _save_file(self, file_data):
+        if not isinstance(file_data, basestring):
+            upload = file_data
+
+            filename = self._file_storage_name(upload.file.name)
+            content_location = StaticContent.compute_location(self.location.course_key, filename)
+
+            chunked = upload.file.multiple_chunks()
+            sc_partial = partial(StaticContent, content_location, filename, upload.file.content_type)
+            if chunked:
+                content = sc_partial(upload.file.chunks())
+                tempfile_path = upload.file.temporary_file_path()
+            else:
+                content = sc_partial(upload.file.read())
+                tempfile_path = None
+
+            contentstore().save(content)
+
+            # readback the saved content - we need the database timestamp
+            readback = contentstore().find(content.location)
+            locked = getattr(content, 'locked', False)
+
+            # return URL of the saved file
+            return StaticContent.serialize_asset_key_with_slash(content.location)
+        else:
+            return None
+
+
+    def _file_storage_name(self, filename):
+        # pylint: disable=no-member
+        """
+        Get file path of storage.
+        """
+        path = (
+            '{loc.block_type}/{loc.block_id}'
+            '/{filename}'.format(
+                loc=self.location,
+                filename=filename
+            )
+        )
+
+        return path
