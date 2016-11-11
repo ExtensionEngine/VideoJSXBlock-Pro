@@ -9,33 +9,35 @@ function videojsXBlockInitStudio(runtime, element) {
     var uploadUrl = runtime.handlerUrl(element, 'upload_video');
 
     $(element).find('.action-save').bind('click', function () {
-        var data = {
-            'display_name': $(element).find('#videojs_edit_display_name').val(),
-            'display_description': $(element).find('#videojs_edit_display_description').val(),
-            'thumbnail_url': $(element).find('#videojs_edit_thumbnail_url').val(),
-            'url': $(element).find('#videojs_edit_url').val(),
-            'allow_download': $(element).find('#videojs_edit_allow_download').val(),
-            'source_text': $(element).find('#videojs_edit_source_text').val(),
-            'source_url': $(element).find('#videojs_edit_source_url').val(),
-            'start_time': $(element).find('#videojs_edit_start_time').val(),
-            'end_time': $(element).find('#videojs_edit_end_time').val(),
-            'sub_title': $(element).find('#videojs_sub_title').val()
-        };
+        var data = new FormData();
+        data.append('display_name', $(element).find('#videojs_edit_display_name').val());
+        data.append('display_description', $(element).find('#videojs_edit_display_description').val());
+        data.append('url', $(element).find('#videojs_edit_url').val());
+        data.append('allow_download', $(element).find('#videojs_edit_allow_download').val());
+        data.append('source_text', $(element).find('#videojs_edit_source_text').val());
+        data.append('source_url', $(element).find('#videojs_edit_source_url').val());
+        data.append('start_time', $(element).find('#videojs_edit_start_time').val());
+        data.append('end_time', $(element).find('#videojs_edit_end_time').val());
+        data.append('sub_title', $(element).find('#videojs_sub_title').val());
+        data.append('thumbnail', $(element).find('#videojs_edit_thumbnail')[0].files[0]);
 
         runtime.notify('save', {state: 'start'});
 
-        $.post(handlerUrl, JSON.stringify(data)).done(function (response) {
-            if (response.result === 'success') {
-                runtime.notify('save', {state: 'end'});
-                // Reload the whole page :
-                window.location.reload(false);
-            } else {
-                runtime.notify('error', {msg: response.message})
-            }
+        $.ajax({
+            url: handlerUrl,
+            type: 'POST',
+            data: data,
+            cache: false,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+        }).done(function(response) {
+            runtime.notify('save', {state: 'end'});
+            window.location.reload(false);
         });
     });
 
-    $(element).find("input[name=file]").bind('change', function () {
+    $(element).find("#captionFile").bind('change', function () {
         var file = this.files[0];
         name = file.name;
         uploadCaption(handlerUrl);

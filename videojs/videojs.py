@@ -174,14 +174,16 @@ class videojsXBlock(XBlock):
         frag.initialize_js('videojsXBlockInitStudio')
         return frag
 
-    @XBlock.json_handler
-    def save_videojs(self, data, suffix=''):
+    @XBlock.handler
+    def save_videojs(self, request, suffix=''):
         """
         The saving handler.
         """
+        data = request.POST
+
         self.display_name = data['display_name']
         self.display_description = data['display_description']
-        self.thumbnail_url = data['thumbnail_url']
+        self.thumbnail_url = self._save_file(data['thumbnail']) # save file and return URL
         self.url = data['url']
         self.allow_download = True if data['allow_download'] == "True" else False  # Str to Bool translation
         self.source_text = data['source_text']
@@ -190,9 +192,8 @@ class videojsXBlock(XBlock):
         self.end_time = ''.join(data['end_time'].split())  # Remove whitespace
         self.sub_title_url = data['sub_title']
 
-        return {
-            'result': 'success',
-        }
+        return Response(json_body={'result': 'success'})
+
 
     @XBlock.json_handler
     def tracking_log(self, data, suffix=''):
@@ -206,9 +207,19 @@ class videojsXBlock(XBlock):
     @XBlock.handler
     def upload_video(self, request, suffix=''):
         data = request.POST
+        url = self._save_file(data['fileupload'])
 
-        if not isinstance(data['fileupload'], basestring):
-            upload = data['fileupload']
+        if url is not None:
+            return Response(json_body={'result': 'success', 'url': url})
+
+        else:
+            return Response(json_body={'result': 'error'})
+
+
+
+    def _save_file(self, file_data):
+        if not isinstance(file_data, basestring):
+            upload = file_data
 
             filename = self._file_storage_name(upload.file.name)
             content_location = StaticContent.compute_location(self.location.course_key, filename)
@@ -228,13 +239,10 @@ class videojsXBlock(XBlock):
             readback = contentstore().find(content.location)
             locked = getattr(content, 'locked', False)
 
-            url = StaticContent.serialize_asset_key_with_slash(content.location)
-
-            return Response(json_body={'result': 'success', 'url': url})
-
+            # return URL of the saved file
+            return StaticContent.serialize_asset_key_with_slash(content.location)
         else:
-            return Response(json_body={'result': 'error'})
-
+            return None
 
 
     def _file_storage_name(self, filename):
