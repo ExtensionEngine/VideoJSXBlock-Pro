@@ -1,110 +1,112 @@
-<div class="wrapper-comp-settings editor-with-buttons is-active" id="settings-tab">
-    <ul class="list-input settings-list">
+<div class="wrapper-comp-settings editor-with-buttons is-active" id="settings-tab" >
+    <ul class="list-input settings-list" >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_display_name">Display Name</label>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_display_name" >Display Name</label >
                 <input class="input setting-input" id="videojs_edit_display_name" value="{{ display_name }}"
-                       type="text">
-            </div>
-            <span class="tip setting-help">This name appears in the horizontal navigation at the top of the page.</span>
-        </li>
+                       type="text" >
+            </div >
+            <span class="tip setting-help" >This name appears in the horizontal navigation at the top of the page.</span >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_display_description">Description</label>
-                <input class="input setting-input" id="videojs_edit_display_description" value="{{ display_description }}"
-                       type="text">
-            </div>
-            <span class="tip setting-help">Video description.</span>
-        </li>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_display_description" >Description</label >
+                <input class="input setting-input" id="videojs_edit_display_description"
+                       value="{{ display_description }}"
+                       type="text" >
+            </div >
+            <span class="tip setting-help" >Video description.</span >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_thumbnail_url">Thumbnail</label>
-                <input class="input setting-input" id="videojs_edit_thumbnail" value="{{ thumbnail_url }}" type="file">
-            </div>
-            <span class="tip setting-help">Thumbnail image file</span>
-        </li>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="thumbnail" >Thumbnail</label >
+                <input class="input setting-input" name="thumbnail" id="thumbnail" type="file" />
+            </div >
+            <span class="tip setting-help" >Upload a thumbnail image</span >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_url">Video file</label>
-                <input id="videojs_edit_url" value="{{ url }}" type="hidden">
-                <input id="fileupload" type="file" name="fileupload" data-url="">
-                <progress id="fileuploadProgress" max=100 style="display: none;"></progress>
-                <span id="fileuploadStatus" style="float: right;"></span>
-            </div>
-        </li>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_url" >Video file</label >
+                <input id="videojs_edit_url" value="{{ url }}" type="hidden" >
+                <input id="fileupload" type="file" name="fileupload" data-url="" >
+                <progress id="fileuploadProgress" max=100 style="display: none;" ></progress >
+                <span id="fileuploadStatus" style="float: right;" ></span >
+            </div >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_allow_download">Video Download Allowed</label>
-                <select class="input setting-input" id="videojs_edit_allow_download">
-                    <option value="True" {% if allow_download %}selected{% endif %}>True</option>
-                    <option value="False" {% if not allow_download %}selected{% endif %}>False</option>
-                </select>
-            </div>
-            <span class="tip setting-help">Allow students to download this video.</span>
-        </li>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_allow_download" >Video Download Allowed</label >
+                <select class="input setting-input" id="videojs_edit_allow_download" >
+                    <option value="True" {% if allow_download %}selected{% endif %} >True</option >
+                    <option value="False" {% if not allow_download %}selected{% endif %} >False</option >
+                </select >
+            </div >
+            <span class="tip setting-help" >Allow students to download this video.</span >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_source_text">Source document button text</label>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_source_text" >Source document button text</label >
                 <input class="input setting-input" id="videojs_edit_source_text" value="{{ source_text }}" type="text"
-                       placeholder="Default : Download the source document">
-            </div>
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_source_url">Source document URL</label>
-                <input class="input setting-input" id="videojs_edit_source_url" value="{{ source_url }}" type="text">
-            </div>
-            <span class="tip setting-help">Add a download link for the source file of your video. Use it for example to provide the PowerPoint or PDF file used for this video.</span>
-        </li>
+                       placeholder="Default : Download the source document" >
+            </div >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_source_url" >Source document URL</label >
+                <input class="input setting-input" id="videojs_edit_source_url" value="{{ source_url }}" type="text" >
+            </div >
+            <span class="tip setting-help" >Add a download link for the source file of your video. Use it for example to provide the PowerPoint or PDF file used for this video.</span >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_start_time">Start time</label>
-                <input class="input setting-input" id="videojs_edit_start_time" value="{{ start_time }}" type="text">
-            </div>
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_edit_end_time">End time</label>
-                <input class="input setting-input" id="videojs_edit_end_time" value="{{ end_time }}" type="text">
-            </div>
-            <span class="tip setting-help">The start and end time of your video. Equivalent to 'video.mp4#t=startTime,endTime' in the url.</span>
-        </li>
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_start_time" >Start time</label >
+                <input class="input setting-input" id="videojs_edit_start_time" value="{{ start_time }}" type="text" >
+            </div >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_edit_end_time" >End time</label >
+                <input class="input setting-input" id="videojs_edit_end_time" value="{{ end_time }}" type="text" >
+            </div >
+            <span class="tip setting-help" >The start and end time of your video. Equivalent to 'video.mp4#t=startTime,endTime' in the url.</span >
+        </li >
 
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="videojs_sub_title">Caption</label>
-                <input class="input setting-input" id="videojs_sub_title" value="{{ sub_title }}" type="text">
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting" >
+                <label class="label setting-label" for="videojs_sub_title" >Caption</label >
+                <input class="input setting-input" id="videojs_sub_title" value="{{ sub_title }}" type="text" >
                 &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:$('input[name=file]').click()"
-                                           class="button upload-button new-button"><i
-                    class="icon fa fa-plus"></i>Upload it.</a>
+                                           class="button upload-button new-button" ><i
+                    class="icon fa fa-plus" ></i >Upload it.</a >
                 <img src="/xblock/resource/videojs/public/img/loading.gif" id="loading-upload"
-                     style="margin: 0px 0 -2px 10px;display: none;">
-            </div>
-            <span class="tip setting-help">The link of subtitle.</span>
-            <span id="upload-msg" style="font-size: 15px;color: rgb(92,193,20);display: none;margin-left:10%">Success !</span>
+                     style="margin: 0px 0 -2px 10px;display: none;" >
+            </div >
+            <span class="tip setting-help" >The link of subtitle.</span >
+            <span id="upload-msg"
+                  style="font-size: 15px;color: rgb(92,193,20);display: none;margin-left:10%" >Success !</span >
             <span id="upload-fail"
-                  style="font-size: 15px;color: rgb(234, 9, 44);display: none;margin-left:10%">Fail !</span>
+                  style="font-size: 15px;color: rgb(234, 9, 44);display: none;margin-left:10%" >Fail !</span >
              <span id="error-file"
-                  style="font-size: 15px;color: rgb(234, 9, 44);display: none;margin-left:10%">Make sure your file is suffixed with vtt !</span>
+                   style="font-size: 15px;color: rgb(234, 9, 44);display: none;margin-left:10%" >Make sure your file is suffixed with vtt !</span >
             <form class="file-chooser" id="file-chooser" action="#" method="post" style="display: none"
-                  enctype="multipart/form-data">
-                <a href="#" class="choose-file-button">Select files</a>
-                <input id="captionFile" type="file" class="file-input" name="file" multiple="">
-            </form>
-        </li>
+                  enctype="multipart/form-data" >
+                <a href="#" class="choose-file-button" >Select files</a >
+                <input id="captionFile" type="file" class="file-input" name="file" multiple="" >
+            </form >
+        </li >
 
-    </ul>
-    <div class="xblock-actions">
-        <ul>
-            <li class="action-item">
-                <a href="#" class="button action-primary action-save">Save</a>
-            </li>
-            <li class="action-item">
-                <a href="#" class="button action-cancel">Cancel</a>
-            </li>
-        </ul>
-    </div>
-</div>
+    </ul >
+    <div class="xblock-actions" >
+        <ul >
+            <li class="action-item" >
+                <a href="#" class="button action-primary action-save" >Save</a >
+            </li >
+            <li class="action-item" >
+                <a href="#" class="button action-cancel" >Cancel</a >
+            </li >
+        </ul >
+    </div >
+</div >

@@ -10,6 +10,7 @@ function videojsXBlockInitStudio(runtime, element) {
 
     $(element).find('.action-save').bind('click', function () {
         var data = new FormData();
+        data.append('usage_id', $(element).data('usage-id'));
         data.append('display_name', $(element).find('#videojs_edit_display_name').val());
         data.append('display_description', $(element).find('#videojs_edit_display_description').val());
         data.append('url', $(element).find('#videojs_edit_url').val());
@@ -19,7 +20,7 @@ function videojsXBlockInitStudio(runtime, element) {
         data.append('start_time', $(element).find('#videojs_edit_start_time').val());
         data.append('end_time', $(element).find('#videojs_edit_end_time').val());
         data.append('sub_title', $(element).find('#videojs_sub_title').val());
-        data.append('thumbnail', $(element).find('#videojs_edit_thumbnail')[0].files[0]);
+        data.append('thumbnail', $(element).find('input[name=thumbnail]')[0].files[0]);
 
         runtime.notify('save', {state: 'start'});
 
@@ -30,7 +31,7 @@ function videojsXBlockInitStudio(runtime, element) {
             cache: false,
             dataType: 'json',
             processData: false,
-            contentType: false,
+            contentType: false
         }).done(function(response) {
             runtime.notify('save', {state: 'end'});
             window.location.reload(false);
@@ -46,6 +47,7 @@ function videojsXBlockInitStudio(runtime, element) {
     // video file upload
     $(element).find('#fileupload').bind('change', function () {
         var data = new FormData();
+        data.append('usage_id', $(element).data('usage-id'));
         data.append('fileupload', $(element).find('input[name=fileupload]')[0].files[0]);
 
         $.ajax({
