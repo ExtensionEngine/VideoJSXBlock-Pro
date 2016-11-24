@@ -4,6 +4,17 @@ var players = new Array();
 var player;
 var youtubePlayerHandler;
 var vimeoPlayerHandler;
+var inactivityTimer;
+
+function showToolbars() {
+    parent.postMessage(JSON.stringify({action: 'showToolbars'}), '*');
+    if (this.inactivityTimer) {
+        clearTimeout(inactivityTimer);
+    }
+    if (player && !player.paused()) {
+        inactivityTimer = setTimeout(parent.postMessage(JSON.stringify({action: 'hideToolbarsAfterDelay'}), '*'), 3000);
+    }
+}
 
 function videojsXBlockInitView(runtime, element) {
     /* Weird behaviour :
@@ -11,6 +22,11 @@ function videojsXBlockInitView(runtime, element) {
      * In the CMS, element is the jQuery object associated*
      * So here I make sure element is the jQuery object */
     if (element.innerHTML) element = $(element);
+
+    // send signal to show toolbars
+    element.on('mousemove', showToolbars);
+    element.on('scroll', showToolbars);
+    element.on('keypress', showToolbars);
 
     //urls.push(runtime.handlerUrl(element, 'tracking_log'));
     var handlerUrl = runtime.handlerUrl(element, 'tracking_log');
@@ -45,7 +61,7 @@ function videojsXBlockInitView(runtime, element) {
             this.on('loadstart', function () {
                 var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
                 send_msg(players[this.id()], msg, 'load_video')
-            })
+            });
         });
     }
 }
@@ -55,6 +71,16 @@ function get_xblock_id(url) {
 }
 
 function send_msg(url, msg, type) {
+    // notify parent that the video has started
+    if (type === 'play_video') {
+        parent.postMessage(JSON.stringify({action: 'hideToolbarsAfterDelay'}), '*');
+    } else if (type === 'pause_video') {
+        if (inactivityTimer) {
+            clearTimeout(inactivityTimer);
+        }
+        parent.postMessage(JSON.stringify({action: 'showToolbars'}), '*');
+    }
+
     $.ajax({
         type: "POST",
         url: url,
@@ -72,59 +98,59 @@ function send_msg(url, msg, type) {
 // YOUTUBE FUNCTIONS
 
 function youtubeInit(runtime, element) {
-  if (element.innerHTML) element = $(element);
+    if (element.innerHTML) element = $(element);
 
-  youtubePlayerHandler = runtime.handlerUrl(element, 'tracking_log');
+    youtubePlayerHandler = runtime.handlerUrl(element, 'tracking_log');
 
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 }
 
 function onYouTubeIframeAPIReady() {
-  var videoId = $('#player').attr('data-video');
+    var videoId = $('#player').attr('data-video');
 
-  player = new YT.Player('player', {
-    height: window.innerHeight*0.8,
-    width: window.innerWidth*0.8,
+    player = new YT.Player('player', {
+        height: window.innerHeight * 0.8,
+        width: window.innerWidth * 0.8,
 
-    videoId: videoId,
-    events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
-    }
-  });
+        videoId: videoId,
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
 }
 
 function onPlayerStateChange(event) {
-    switch(event.data) {
-      case YT.PlayerState.PLAYING:
-        var msg = "{'id':'" + get_xblock_id(youtubePlayerHandler) + "','currentTime':" + player.getCurrentTime() + ",'code':'youtube'}";
-        send_msg(youtubePlayerHandler, msg, 'play_video')
-        break;
-      case YT.PlayerState.PAUSED:
-        var msg = "{'id':'" + get_xblock_id(youtubePlayerHandler) + "','currentTime':" + player.getCurrentTime() + ",'code':'youtube'}";
-        send_msg(youtubePlayerHandler, msg, 'pause_video');
-        break;
-      case YT.PlayerState.ENDED:
-        var msg = "{'id':'" + get_xblock_id(youtubePlayerHandler) + "','currentTime':" + player.getCurrentTime() + ",'code':'youtube'}";
-        send_msg(youtubePlayerHandler, msg, 'stop_video');
-        break;
-      default:
-        return;
+    switch (event.data) {
+        case YT.PlayerState.PLAYING:
+            var msg = "{'id':'" + get_xblock_id(youtubePlayerHandler) + "','currentTime':" + player.getCurrentTime() + ",'code':'youtube'}";
+            send_msg(youtubePlayerHandler, msg, 'play_video')
+            break;
+        case YT.PlayerState.PAUSED:
+            var msg = "{'id':'" + get_xblock_id(youtubePlayerHandler) + "','currentTime':" + player.getCurrentTime() + ",'code':'youtube'}";
+            send_msg(youtubePlayerHandler, msg, 'pause_video');
+            break;
+        case YT.PlayerState.ENDED:
+            var msg = "{'id':'" + get_xblock_id(youtubePlayerHandler) + "','currentTime':" + player.getCurrentTime() + ",'code':'youtube'}";
+            send_msg(youtubePlayerHandler, msg, 'stop_video');
+            break;
+        default:
+            return;
     }
 }
 
 function onPlayerReady(event) {
-  event.target.setVolume(100);
-  event.target.playVideo();
+    event.target.setVolume(100);
+    event.target.playVideo();
 }
 
 // VIMEO FUNCTIONS
 
 function vimeoInit(runtime, element) {
-    $(function() {
+    $(function () {
         var player = $('#player_1');
         var playerOrigin = '*';
         vimeoPlayerHandler = runtime.handlerUrl(element, 'tracking_log');
@@ -175,6 +201,7 @@ function vimeoInit(runtime, element) {
 
         function onReady() {
         }
+
         function onPlay(data) {
             var msg = "{'id':'" + get_xblock_id(vimeoPlayerHandler) + "','currentTime':" + data.seconds + ",'code':'vimeo'}";
             send_msg(vimeoPlayerHandler, msg, 'play_video')
