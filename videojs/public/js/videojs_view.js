@@ -4,15 +4,38 @@ var players = new Array();
 var player;
 var youtubePlayerHandler;
 var vimeoPlayerHandler;
-var inactivityTimer;
+var iframeMessaging = {
+    inactivityTimer: undefined,
+    isPausedOrFinished: false,
+    isBlocked: false,
+    activeWhileBlocked: false
+};
+
+function hideToolbars() {
+    parent.postMessage(JSON.stringify({
+        action: 'hideToolbars'
+    }), '*');
+}
 
 function showToolbars() {
-    parent.postMessage(JSON.stringify({action: 'showToolbars'}), '*');
-    if (this.inactivityTimer) {
-        clearTimeout(inactivityTimer);
-    }
-    if (player && !player.paused()) {
-        inactivityTimer = setTimeout(parent.postMessage(JSON.stringify({action: 'hideToolbarsAfterDelay'}), '*'), 3000);
+    // don't send too many messages
+    if (!iframeMessaging.isBlocked) {
+        parent.postMessage(JSON.stringify({
+            action: 'showToolbars',
+            setTimer: !iframeMessaging.isPausedOrFinished
+        }), '*');
+
+        iframeMessaging.isBlocked = true;
+
+        setTimeout(function () {
+            iframeMessaging.isBlocked = false;
+            if (iframeMessaging.activeWhileBlocked) {
+                iframeMessaging.activeWhileBlocked = false;
+                showToolbars();
+            }
+        }, 500);
+    } else {
+        iframeMessaging.activeWhileBlocked = true;
     }
 }
 
@@ -72,13 +95,19 @@ function get_xblock_id(url) {
 
 function send_msg(url, msg, type) {
     // notify parent that the video has started
-    if (type === 'play_video') {
-        parent.postMessage(JSON.stringify({action: 'hideToolbarsAfterDelay'}), '*');
-    } else if (type === 'pause_video') {
-        if (inactivityTimer) {
-            clearTimeout(inactivityTimer);
-        }
-        parent.postMessage(JSON.stringify({action: 'showToolbars'}), '*');
+    switch (type) {
+        case 'play_video':
+            iframeMessaging.isPausedOrFinished = false;
+            hideToolbars();
+            break;
+        case 'pause_video':
+            iframeMessaging.isPausedOrFinished = true;
+            showToolbars();
+            break;
+        case 'ended':
+            iframeMessaging.isPausedOrFinished = true;
+            showToolbars();
+            break;
     }
 
     $.ajax({
