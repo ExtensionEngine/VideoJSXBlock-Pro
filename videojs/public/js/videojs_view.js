@@ -1,6 +1,6 @@
 /* Javascript for videojsXBlock. */
-var urls = new Array();
-var players = new Array();
+var urls = [];
+var players = [];
 var player;
 var youtubePlayerHandler;
 var vimeoPlayerHandler;
@@ -12,9 +12,7 @@ var iframeMessaging = {
 };
 
 function hideToolbars() {
-    parent.postMessage(JSON.stringify({
-        action: 'hideToolbars'
-    }), '*');
+    parent.postMessage(JSON.stringify({action: 'hideToolbars'}), '*');
 }
 
 function showToolbars() {
@@ -40,6 +38,7 @@ function showToolbars() {
 }
 
 function videojsXBlockInitView(runtime, element) {
+
     /* Weird behaviour :
      * In the LMS, element is the DOM container.
      * In the CMS, element is the jQuery object associated*
@@ -58,35 +57,49 @@ function videojsXBlockInitView(runtime, element) {
     var currentTime = 0;
 
     var video = element.find('video');
-    for (var i = 0; i < video.size(); i++) {
-        videojs(video.get(i), {playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2]}, function () {
-            players[this.id()] = handlerUrl;
-            this.on('timeupdate', function () {
-                previousTime = currentTime;
-                currentTime = this.currentTime();
-                if (this.seeking()) {//Math.round()
-                    var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','old_time':" + previousTime + ",'new_time':" + currentTime + ",'type':'onSlideSeek','code':'html5'}";
-                    send_msg(players[this.id()], msg, 'seek_video');
-                }
-            });
-            this.on('pause', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-                send_msg(players[this.id()], msg, 'pause_video');
-            });
-            this.on('play', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-                send_msg(players[this.id()], msg, 'play_video')
-            });
-            this.on('ended', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-                send_msg(players[this.id()], msg, 'stop_video')
-            });
-            this.on('loadstart', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
-                send_msg(players[this.id()], msg, 'load_video')
-            });
+
+    var options = {
+        "controlBar": {
+            "muteToggle": false,
+            "playToggle": false,
+            "volumeControl": false,
+            "fullscreenToggle": false,
+            "currentTimeDisplay": false,
+            "timeDivider": false,
+            "durationDisplay": false,
+            "remainingTimeDisplay": false,
+            "playbackRateMenuButton": false
+        }
+    };
+
+    videojs(video[0], options, function () {
+        players[this.id()] = handlerUrl;
+        this.on('timeupdate', function () {
+            previousTime = currentTime;
+            currentTime = this.currentTime();
+            if (this.seeking()) {
+                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','old_time':" + previousTime + ",'new_time':" + currentTime + ",'type':'onSlideSeek','code':'html5'}";
+                send_msg(players[this.id()], msg, 'seek_video');
+            }
         });
-    }
+        this.on('pause', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
+            send_msg(players[this.id()], msg, 'pause_video');
+        });
+        this.on('play', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
+            send_msg(players[this.id()], msg, 'play_video')
+        });
+        this.on('ended', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
+            send_msg(players[this.id()], msg, 'stop_video')
+        });
+        this.on('loadstart', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
+            send_msg(players[this.id()], msg, 'load_video')
+        });
+
+    });
 }
 
 function get_xblock_id(url) {
