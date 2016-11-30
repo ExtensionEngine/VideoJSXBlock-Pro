@@ -99,6 +99,7 @@ function videojsXBlockInitView(runtime, element) {
             send_msg(players[this.id()], msg, 'load_video')
         });
 
+        this.play();
     });
 }
 
