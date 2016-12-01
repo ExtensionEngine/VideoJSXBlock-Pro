@@ -1,22 +1,44 @@
 /* Javascript for videojsXBlock. */
-var urls = new Array();
-var players = new Array();
+var urls = [];
+var players = [];
 var player;
 var youtubePlayerHandler;
 var vimeoPlayerHandler;
-var inactivityTimer;
+var iframeMessaging = {
+    inactivityTimer: undefined,
+    isPausedOrFinished: false,
+    isBlocked: false,
+    activeWhileBlocked: false
+};
+
+function hideToolbars() {
+    parent.postMessage(JSON.stringify({action: 'hideToolbars'}), '*');
+}
 
 function showToolbars() {
-    parent.postMessage(JSON.stringify({action: 'showToolbars'}), '*');
-    if (this.inactivityTimer) {
-        clearTimeout(inactivityTimer);
-    }
-    if (player && !player.paused()) {
-        inactivityTimer = setTimeout(parent.postMessage(JSON.stringify({action: 'hideToolbarsAfterDelay'}), '*'), 3000);
+    // don't send too many messages
+    if (!iframeMessaging.isBlocked) {
+        parent.postMessage(JSON.stringify({
+            action: 'showToolbars',
+            setTimer: !iframeMessaging.isPausedOrFinished
+        }), '*');
+
+        iframeMessaging.isBlocked = true;
+
+        setTimeout(function () {
+            iframeMessaging.isBlocked = false;
+            if (iframeMessaging.activeWhileBlocked) {
+                iframeMessaging.activeWhileBlocked = false;
+                showToolbars();
+            }
+        }, 500);
+    } else {
+        iframeMessaging.activeWhileBlocked = true;
     }
 }
 
 function videojsXBlockInitView(runtime, element) {
+
     /* Weird behaviour :
      * In the LMS, element is the DOM container.
      * In the CMS, element is the jQuery object associated*
@@ -35,35 +57,50 @@ function videojsXBlockInitView(runtime, element) {
     var currentTime = 0;
 
     var video = element.find('video');
-    for (var i = 0; i < video.size(); i++) {
-        videojs(video.get(i), {playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2]}, function () {
-            players[this.id()] = handlerUrl;
-            this.on('timeupdate', function () {
-                previousTime = currentTime;
-                currentTime = this.currentTime();
-                if (this.seeking()) {//Math.round()
-                    var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','old_time':" + previousTime + ",'new_time':" + currentTime + ",'type':'onSlideSeek','code':'html5'}";
-                    send_msg(players[this.id()], msg, 'seek_video');
-                }
-            });
-            this.on('pause', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-                send_msg(players[this.id()], msg, 'pause_video');
-            });
-            this.on('play', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-                send_msg(players[this.id()], msg, 'play_video')
-            });
-            this.on('ended', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-                send_msg(players[this.id()], msg, 'stop_video')
-            });
-            this.on('loadstart', function () {
-                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
-                send_msg(players[this.id()], msg, 'load_video')
-            });
+
+    var options = {
+        "controlBar": {
+            "muteToggle": false,
+            "playToggle": false,
+            "volumeControl": false,
+            "fullscreenToggle": false,
+            "currentTimeDisplay": false,
+            "timeDivider": false,
+            "durationDisplay": false,
+            "remainingTimeDisplay": false,
+            "playbackRateMenuButton": false
+        }
+    };
+
+    videojs(video[0], options, function () {
+        players[this.id()] = handlerUrl;
+        this.on('timeupdate', function () {
+            previousTime = currentTime;
+            currentTime = this.currentTime();
+            if (this.seeking()) {
+                var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','old_time':" + previousTime + ",'new_time':" + currentTime + ",'type':'onSlideSeek','code':'html5'}";
+                send_msg(players[this.id()], msg, 'seek_video');
+            }
         });
-    }
+        this.on('pause', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
+            send_msg(players[this.id()], msg, 'pause_video');
+        });
+        this.on('play', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
+            send_msg(players[this.id()], msg, 'play_video')
+        });
+        this.on('ended', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
+            send_msg(players[this.id()], msg, 'stop_video')
+        });
+        this.on('loadstart', function () {
+            var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
+            send_msg(players[this.id()], msg, 'load_video')
+        });
+
+        this.play();
+    });
 }
 
 function get_xblock_id(url) {
@@ -72,13 +109,19 @@ function get_xblock_id(url) {
 
 function send_msg(url, msg, type) {
     // notify parent that the video has started
-    if (type === 'play_video') {
-        parent.postMessage(JSON.stringify({action: 'hideToolbarsAfterDelay'}), '*');
-    } else if (type === 'pause_video') {
-        if (inactivityTimer) {
-            clearTimeout(inactivityTimer);
-        }
-        parent.postMessage(JSON.stringify({action: 'showToolbars'}), '*');
+    switch (type) {
+        case 'play_video':
+            iframeMessaging.isPausedOrFinished = false;
+            hideToolbars();
+            break;
+        case 'pause_video':
+            iframeMessaging.isPausedOrFinished = true;
+            showToolbars();
+            break;
+        case 'ended':
+            iframeMessaging.isPausedOrFinished = true;
+            showToolbars();
+            break;
     }
 
     $.ajax({
