@@ -27,6 +27,15 @@
             <a href="http://videojs.com/html5-video-support/" target="_blank" >supports HTML5 video</a ></p >
     </video >
     <script >
+        document.getElementsByTagName('video')[0].ready = function () {
+            if ($('.xblock-render').length == 0) {
+                $('video')[0].play();
+            }
+        }
+    </script >
+
+
+    <script >
         $(document).ready(function () {
             parent.postMessage(JSON.stringify({action: 'isMuted'}), '*');
 

@@ -98,8 +98,6 @@ function videojsXBlockInitView(runtime, element) {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
             send_msg(players[this.id()], msg, 'load_video')
         });
-
-        this.play();
     });
 }
 
