@@ -3,7 +3,7 @@
 
         <li class="field comp-setting-entry is-set" >
             <div class="wrapper-comp-setting" >
-                <label class="label setting-label" for="videojs_edit_display_name" >Display Name</label >
+                <label class="label setting-label" for="videojs_edit_display_name" >Media Title</label >
                 <input class="input setting-input" id="videojs_edit_display_name" value="{{ display_name }}"
                        type="text" >
             </div >
@@ -22,7 +22,7 @@
 
         <li class="field comp-setting-entry is-set" >
             <div class="wrapper-comp-setting" >
-                <label class="label setting-label" for="thumbnail" >Thumbnail</label >
+                <label class="label setting-label" for="thumbnail" >Media Thumbnail</label >
                 <input class="input setting-input" name="thumbnail" id="thumbnail" type="file" />
             </div >
             <span class="tip setting-help" >Upload a thumbnail image</span >
@@ -49,7 +49,7 @@
             <span class="tip setting-help" >Allow students to download this video.</span >
         </li >
 
-        <li class="field comp-setting-entry is-set" >
+        <li class="field comp-setting-entry is-set" style="display:none" >
             <div class="wrapper-comp-setting" >
                 <label class="label setting-label" for="videojs_edit_source_text" >Source document button text</label >
                 <input class="input setting-input" id="videojs_edit_source_text" value="{{ source_text }}" type="text"
@@ -62,7 +62,7 @@
             <span class="tip setting-help" >Add a download link for the source file of your video. Use it for example to provide the PowerPoint or PDF file used for this video.</span >
         </li >
 
-        <li class="field comp-setting-entry is-set" >
+        <li class="field comp-setting-entry is-set" style="display:none">
             <div class="wrapper-comp-setting" >
                 <label class="label setting-label" for="videojs_edit_start_time" >Start time</label >
                 <input class="input setting-input" id="videojs_edit_start_time" value="{{ start_time }}" type="text" >
@@ -76,7 +76,7 @@
 
         <li class="field comp-setting-entry is-set" >
             <div class="wrapper-comp-setting" >
-                <label class="label setting-label" for="videojs_sub_title" >Caption</label >
+                <label class="label setting-label" for="videojs_sub_title" >Upload Captions/Subtitles</label >
                 <input class="input setting-input" id="videojs_sub_title" value="{{ sub_title }}" type="text" >
                 &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:$('input[name=file]').click()"
                                            class="button upload-button new-button" ><i
@@ -84,7 +84,7 @@
                 <img src="/xblock/resource/videojs/public/img/loading.gif" id="loading-upload"
                      style="margin: 0px 0 -2px 10px;display: none;" >
             </div >
-            <span class="tip setting-help" >The link of subtitle.</span >
+            <span class="tip setting-help" >The link of caption/subtitle.</span >
             <span id="upload-msg"
                   style="font-size: 15px;color: rgb(92,193,20);display: none;margin-left:10%" >Success !</span >
             <span id="upload-fail"
