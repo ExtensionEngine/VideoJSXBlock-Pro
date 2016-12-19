@@ -22,6 +22,16 @@ function videojsXBlockInitStudio(runtime, element) {
         data.append('sub_title', $(element).find('#videojs_sub_title').val());
         data.append('thumbnail', $(element).find('input[name=thumbnail]')[0].files[0]);
 
+        if (data.get('thumbnail').size > 2000000) {
+            alert('Thumbnail size is too large!');
+            return;
+        }
+
+        if (data.get('thumbnail').type.indexOf('image') !== 0) {
+            alert('Thumbnail does not have a correct format!');
+            return;
+        }
+
         runtime.notify('save', {state: 'start'});
 
         $.ajax({
@@ -51,13 +61,14 @@ function videojsXBlockInitStudio(runtime, element) {
 
         var file = $(element).find('input[name=fileupload]')[0].files[0];
         if (file) {
+            //file size in bytes
             if (file.size > 4000000000) {
-                alert("File is too big.");
+                alert("Video size is too large!");
                 return;
             }
 
             if (file.type.indexOf('video') !== 0) {
-                alert("Format is not good.");
+                alert("Video does not have a correct format!");
                 return;
             }
         }
