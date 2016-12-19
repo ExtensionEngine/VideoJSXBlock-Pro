@@ -21,7 +21,7 @@ function videojsXBlockInitStudio(runtime, element) {
         data.append('end_time', $(element).find('#videojs_edit_end_time').val());
         data.append('sub_title', $(element).find('#videojs_sub_title').val());
         data.append('thumbnail', $(element).find('input[name=thumbnail]')[0].files[0]);
-
+        //file size in bytes
         if (data.get('thumbnail').size > 2000000) {
             alert('Thumbnail size is too large!');
             return;
