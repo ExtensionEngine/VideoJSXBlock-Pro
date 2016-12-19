@@ -56,7 +56,7 @@ function videojsXBlockInitStudio(runtime, element) {
                 return;
             }
 
-            if (file.type !== 'video/mp4' && file.type !== 'video/ogg') {
+            if (file.type.indexOf('video') !== 0) {
                 alert("Format is not good.");
                 return;
             }
