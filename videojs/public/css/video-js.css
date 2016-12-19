@@ -363,7 +363,7 @@ fonts to show/hide properly.
       The -50% left position makes that happen.
   */
 
-  background: orange;
+  background: #C84B1B;
 }
 .vjs-default-skin .vjs-load-progress {
   background: #646464 /* IE8- Fallback */;
