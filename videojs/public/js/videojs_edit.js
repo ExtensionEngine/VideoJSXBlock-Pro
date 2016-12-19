@@ -48,7 +48,20 @@ function videojsXBlockInitStudio(runtime, element) {
     $(element).find('#fileupload').bind('change', function () {
         var data = new FormData();
         data.append('usage_id', $(element).data('usage-id'));
-        data.append('fileupload', $(element).find('input[name=fileupload]')[0].files[0]);
+
+        var file = $(element).find('input[name=fileupload]')[0].files[0];
+        if (file) {
+            if (file.size > 4000000000) {
+                alert("File is too big.");
+                return;
+            }
+
+            if (file.type !== 'video/mp4' && file.type !== 'video/ogg') {
+                alert("Format is not good.");
+                return;
+            }
+        }
+        data.append('fileupload', file);
 
         $.ajax({
             xhr: function() {
