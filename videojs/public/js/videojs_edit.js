@@ -9,28 +9,47 @@ function videojsXBlockInitStudio(runtime, element) {
     var uploadUrl = runtime.handlerUrl(element, 'upload_video');
 
     $(element).find('.action-save').bind('click', function () {
-        var data = new FormData();
-        data.append('usage_id', $(element).data('usage-id'));
-        data.append('display_name', $(element).find('#videojs_edit_display_name').val());
-        data.append('display_description', $(element).find('#videojs_edit_display_description').val());
-        data.append('url', $(element).find('#videojs_edit_url').val());
-        data.append('allow_download', $(element).find('#videojs_edit_allow_download').val());
-        data.append('source_text', $(element).find('#videojs_edit_source_text').val());
-        data.append('source_url', $(element).find('#videojs_edit_source_url').val());
-        data.append('start_time', $(element).find('#videojs_edit_start_time').val());
-        data.append('end_time', $(element).find('#videojs_edit_end_time').val());
-        data.append('sub_title', $(element).find('#videojs_sub_title').val());
-        data.append('thumbnail', $(element).find('input[name=thumbnail]')[0].files[0]);
-        //file size in bytes
-        if (data.get('thumbnail').size > 2000000) {
-            alert('Thumbnail size is too large!');
-            return;
+        var usageId = $(element).data('usage-id');
+        var displayName = $(element).find('#videojs_edit_display_name').val();
+        var displayDescription = $(element).find('#videojs_edit_display_description').val();
+        var url = $(element).find('#videojs_edit_url').val();
+        var allowDownload = $(element).find('#videojs_edit_allow_download').val();
+        var sourceText = $(element).find('#videojs_edit_source_text').val();
+        var sourceUrl = $(element).find('#videojs_edit_source_url').val();
+        var startTime = $(element).find('#videojs_edit_start_time').val();
+        var endTime = $(element).find('#videojs_edit_end_time').val();
+        var subTitle = $(element).find('#videojs_sub_title').val();
+        var thumbnail = $(element).find('input[name=thumbnail]')[0].files[0];
+
+        function imagesAreValid() {
+          if (thumbnail != undefined) {
+            if (thumbnail.size > 2000000) {
+                alert('Thumbnail size is too large!');
+                return false;
+            }
+            if (thumbnail.type.indexOf('image') !== 0) {
+                alert('Thumbnail does not have a correct format!');
+                return false;
+            }
+          }
+          return true;
+        };
+        if (!imagesAreValid()) {
+          return;
         }
 
-        if (data.get('thumbnail').type.indexOf('image') !== 0) {
-            alert('Thumbnail does not have a correct format!');
-            return;
-        }
+        var data = new FormData();
+        data.append('usage_id', usageId);
+        data.append('display_name', displayName);
+        data.append('display_description', displayDescription);
+        data.append('url', url);
+        data.append('allow_download', allowDownload);
+        data.append('source_text', sourceText);
+        data.append('source_url', sourceUrl);
+        data.append('start_time', startTime);
+        data.append('end_time', endTime);
+        data.append('sub_title', subTitle);
+        data.append('thumbnail', thumbnail);
 
         runtime.notify('save', {state: 'start'});
 
