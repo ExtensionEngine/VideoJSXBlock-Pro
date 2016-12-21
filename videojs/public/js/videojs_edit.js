@@ -25,11 +25,11 @@ function videojsXBlockInitStudio(runtime, element) {
           if (thumbnail != undefined) {
             if (thumbnail.size > 2000000) {
                 alert('Thumbnail size is too large!');
-                false;
+                return false;
             }
             if (thumbnail.type.indexOf('image') !== 0) {
                 alert('Thumbnail does not have a correct format!');
-                false;
+                return false;
             }
           }
           return true;
