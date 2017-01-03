@@ -18,7 +18,7 @@ function videojsXBlockInitStudio(runtime, element) {
         var sourceUrl = $(element).find('#videojs_edit_source_url').val();
         var startTime = $(element).find('#videojs_edit_start_time').val();
         var endTime = $(element).find('#videojs_edit_end_time').val();
-        var subTitle = $(element).find('#videojs_sub_title').val();
+        var subTitle = $(element).find('#videojs_sub_title')[0].files[0];
         var thumbnail = $(element).find('input[name=thumbnail]')[0].files[0];
 
         function imagesAreValid() {

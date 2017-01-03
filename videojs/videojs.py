@@ -59,7 +59,7 @@ class videojsXBlock(XBlock, FileUploadMixin):
                       scope=Scope.content,
                       help="The start and end time of your video. Equivalent to 'video.mp4#t=startTime,endTime' in the url.")
 
-    sub_title_url = String(display_name="sub_title",
+    sub_title_url = String(display_name="sub_title_url",
                            default="",
                            scope=Scope.content,
                            help="The link of subtitle.")
@@ -121,7 +121,7 @@ class videojsXBlock(XBlock, FileUploadMixin):
             'allow_download': self.allow_download,
             'source_text': self.source_text,
             'source_url': self.source_url,
-            'subtitle_url': self.sub_title_url,
+            'sub_title_url': self.sub_title_url,
             'id': time.time(),
             'is_youtube': is_youtube,
             'is_vimeo': is_vimeo,
@@ -158,7 +158,7 @@ class videojsXBlock(XBlock, FileUploadMixin):
             'source_url': self.source_url,
             'start_time': self.start_time,
             'end_time': self.end_time,
-            'sub_title': self.sub_title_url
+            'sub_title_url': self.sub_title_url
         }
         html = self.render_template('public/html/videojs_edit.html', context)
 
@@ -183,9 +183,13 @@ class videojsXBlock(XBlock, FileUploadMixin):
         self.source_url = data['source_url']
         self.start_time = ''.join(data['start_time'].split())  # Remove whitespace
         self.end_time = ''.join(data['end_time'].split())  # Remove whitespace
-        self.sub_title_url = data['sub_title']
 
         block_id = data['usage_id']
+
+        if not isinstance(data['sub_title'], basestring):
+            upload = data['sub_title']
+            self.sub_title_url = self.upload_to_s3('SUBTITLES', upload.file, block_id, self.sub_title_url)
+
         if not isinstance(data['thumbnail'], basestring):
             upload = data['thumbnail']
             self.thumbnail_url = self.upload_to_s3('THUMBNAIL', upload.file, block_id, self.thumbnail_url)

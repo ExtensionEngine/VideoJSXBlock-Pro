@@ -98,7 +98,68 @@ function videojsXBlockInitView(runtime, element) {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
             send_msg(players[this.id()], msg, 'load_video')
         });
+
+        enableMessaging();
+        sendMessage({action: 'isMuted'});
+        sendMessage({action: 'areCaptionsVisible'});
+        setCuePosition($('video')[0]);
     });
+}
+
+function sendMessage(data) {
+    parent.postMessage(JSON.stringify(data), '*');
+}
+
+function enableMessaging() {
+    function handleIframeMessage(event) {
+        var message = JSON.parse(event.data);
+        var $video = $('video')[0];
+        switch (message.action) {
+            case 'mute':
+                $video.muted = true;
+                break;
+
+            case 'unmute':
+                $video.muted = false;
+                break;
+
+            case 'toggleCaptions':
+                toggleCaptions(message.data.visible);
+                break;
+        }
+    }
+
+    window.addEventListener('message', handleIframeMessage, false);
+}
+
+function getTrack($video) {
+    if ($video.textTracks && $video.textTracks[0]) {
+        return $video.textTracks[0];
+    } else {
+        return null;
+    }
+}
+
+function toggleCaptions(visible) {
+    var tracks = getTrack($('video')[0]);
+    if (tracks) {
+        tracks.mode = visible ? "showing" : "hidden";
+    }
+}
+
+function setCuePosition(video) {
+    var trackElements = $(video).find('track');
+    // for each track element
+    for (var i = 0; i < trackElements.length; i++) {
+        trackElements[i].addEventListener('load', function () {
+            //var textTrack = this.track; // gotcha: "this" is an HTMLTrackElement, not a TextTrack object
+            var textTrack = getTrack(video);
+            for (var j = 0; j < textTrack.cues.length; ++j) {
+                var cue = textTrack.cues[j];
+                cue.line = 60;
+            }
+        });
+    }
 }
 
 function get_xblock_id(url) {
