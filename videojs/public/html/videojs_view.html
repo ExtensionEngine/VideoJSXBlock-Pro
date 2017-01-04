@@ -21,8 +21,12 @@
             width="600"
             height="400"
             id="video-js{{ id }}"
+            crossorigin="anonymous"
     >
         <source src="{{ url }}" type="video/mp4" >
+        {% if sub_title_url %}
+        <track src="{{ sub_title_url }}">
+        {% endif %}
         <p class="vjs-no-js" >To view this video please enable JavaScript, and consider upgrading to a web browser that
             <a href="http://videojs.com/html5-video-support/" target="_blank" >supports HTML5 video</a ></p >
     </video >
@@ -32,28 +36,6 @@
                 $('video')[0].play();
             }
         }
-    </script >
-
-
-    <script >
-        $(document).ready(function () {
-            parent.postMessage(JSON.stringify({action: 'isMuted'}), '*');
-
-            function handleIframeMessage(event) {
-                var message = JSON.parse(event.data);
-                switch (message.action) {
-                    case 'mute':
-                        $('video')[0].muted = true;
-                        break;
-
-                    case 'unmute':
-                        $('video')[0].muted = false;
-                        break;
-                }
-            }
-
-            window.addEventListener('message', handleIframeMessage, false);
-        });
     </script >
     {% endif %}
 </div >
