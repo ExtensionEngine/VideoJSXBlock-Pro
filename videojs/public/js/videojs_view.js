@@ -154,7 +154,7 @@ function setCuePosition(video) {
         trackElements[i].addEventListener('load', function () {
             //var textTrack = this.track; // gotcha: "this" is an HTMLTrackElement, not a TextTrack object
             var textTrack = getTrack(video);
-            for (var j = 0; j < textTrack.cues.length; ++j) {
+            for (var j = 0; j < textTrack.cues.length; j++) {
                 var cue = textTrack.cues[j];
                 cue.line = 60;
             }
