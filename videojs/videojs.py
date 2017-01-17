@@ -35,7 +35,7 @@ class videojsXBlock(XBlock, FileUploadMixin):
                  help="The URL for your video.")
 
     allow_download = Boolean(display_name="Video Download Allowed",
-                             default=True,
+                             default=False,
                              scope=Scope.content,
                              help="Allow students to download this video.")
 
