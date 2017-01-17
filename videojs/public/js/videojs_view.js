@@ -85,18 +85,20 @@ function videojsXBlockInitView(runtime, element) {
         this.on('pause', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
             send_msg(players[this.id()], msg, 'pause_video');
+            this.bigPlayButton.show();
         });
         this.on('play', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-            send_msg(players[this.id()], msg, 'play_video')
+            send_msg(players[this.id()], msg, 'play_video');
+            this.bigPlayButton.hide();
         });
         this.on('ended', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
-            send_msg(players[this.id()], msg, 'stop_video')
+            send_msg(players[this.id()], msg, 'stop_video');
         });
         this.on('loadstart', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','code':'html5'}";
-            send_msg(players[this.id()], msg, 'load_video')
+            send_msg(players[this.id()], msg, 'load_video');
         });
 
         enableMessaging();

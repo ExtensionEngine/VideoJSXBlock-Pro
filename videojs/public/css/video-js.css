@@ -1009,3 +1009,8 @@ body.vjs-full-window {
 /* -----------------------------------------------------------------------------
 The original source of this file lives at
 https://github.com/videojs/video.js/blob/master/src/css/video-js.less */
+
+/* http://stackoverflow.com/questions/25091972/how-can-i-make-the-vjs-big-play-button-appear-when-the-video-is-paused */
+.vjs-paused.vjs-has-started .vjs-big-play-button {
+  display: block;
+}
