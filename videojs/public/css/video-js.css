@@ -84,12 +84,12 @@ The default control bar that is a container for most of the controls.
     position: absolute;
     /* Place control bar at the bottom of the player box/video.
        If you want more margin below the control bar, add more height. */
-    bottom: 31px;
+    bottom: 0 !important;
     /* Use left/right to stretch to 100% width of player div */
     left: 0;
     right: 0;
     /* Height includes any margin you want above or below control items */
-    height: 0;
+    height: 20px;
     /* background-color-with-alpha */
     background-color: #07141e;
     background-color: rgba(7, 20, 30, 0.7);
@@ -153,23 +153,23 @@ fonts to show/hide properly.
 
 /* General styles for individual controls. */
 .vjs-default-skin .vjs-control {
-    outline: none;
+    outline: medium none;
     position: relative;
     float: left;
     text-align: center;
     margin: 0;
     padding: 0;
-    height: 3.0em;
+    height: 20px;
     width: 4em;
 }
 
 /* Font button icons */
 .vjs-default-skin .vjs-control:before {
     font-family: VideoJS;
+    transform: translateY(-50%);
     font-size: 1.5em;
-    line-height: 2;
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
     width: 100%;
     height: 100%;
@@ -207,16 +207,25 @@ fonts to show/hide properly.
 --------------------------------------------------------------------------------
 */
 .vjs-default-skin .vjs-play-control {
-    width: 5em;
     cursor: pointer;
+    height: 20px;
+    left: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
 }
 
 .vjs-default-skin .vjs-play-control:before {
     content: "\e001";
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .vjs-default-skin.vjs-playing .vjs-play-control:before {
     content: "\e002";
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Playback toggle
@@ -343,19 +352,20 @@ fonts to show/hide properly.
 */
 .vjs-default-skin .vjs-progress-control {
     position: absolute;
-    left: 0;
     right: 0;
-    width: auto;
+    width: calc(100% - 40px);
+
     font-size: 1.5em;
-    height: 1em;
+    height: 20px;
     /* Set above the rest of the controls. */
-    top: -1em;
+    top: 50%;
     /* Shrink the bar slower than it grows. */
+    transform: translateY(-50%);
     /* transition */
-    -webkit-transition: all 0.4s;
-    -moz-transition: all 0.4s;
-    -o-transition: all 0.4s;
-    transition: all 0.4s;
+    -webkit-transition: all 0.4s ease 0s;
+    -moz-transition: all 0.4s ease 0s;
+    -o-transition: all 0.4s ease 0s;
+    transition: all 0.4s ease 0s;
 }
 
 /* On hover, make the progress bar grow to something that's more clickable.
