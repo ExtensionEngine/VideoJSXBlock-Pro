@@ -59,9 +59,10 @@ function videojsXBlockInitView(runtime, element) {
     var video = element.find('video');
 
     var options = {
+        "controls": true,
         "controlBar": {
             "muteToggle": false,
-            "playToggle": false,
+            "playToggle": true,
             "volumeControl": false,
             "fullscreenToggle": false,
             "currentTimeDisplay": false,
@@ -85,12 +86,10 @@ function videojsXBlockInitView(runtime, element) {
         this.on('pause', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
             send_msg(players[this.id()], msg, 'pause_video');
-            this.bigPlayButton.show();
         });
         this.on('play', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
             send_msg(players[this.id()], msg, 'play_video');
-            this.bigPlayButton.hide();
         });
         this.on('ended', function () {
             var msg = "{'id':'" + get_xblock_id(players[this.id()]) + "','currentTime':" + currentTime + ",'code':'html5'}";
