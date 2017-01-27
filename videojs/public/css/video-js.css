@@ -177,7 +177,7 @@ fonts to show/hide properly.
 }
 
 /* Replacement for focus outline */
-.vjs-default-skin .vjs-control:focus:before,
+/*.vjs-default-skin .vjs-control:focus:before,*/
 .vjs-default-skin .vjs-control:hover:before {
     text-shadow: 0em 0em 1em #ffffff;
 }
